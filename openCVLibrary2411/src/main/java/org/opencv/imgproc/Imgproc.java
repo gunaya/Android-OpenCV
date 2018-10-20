@@ -440,9 +440,10 @@ public class Imgproc {
  * @param threshold1 first threshold for the hysteresis procedure.
  * @param threshold2 second threshold for the hysteresis procedure.
  *
+ * @param i
  * @see <a href="http://docs.opencv.org/modules/imgproc/doc/feature_detection.html#canny">org.opencv.imgproc.Imgproc.Canny</a>
  */
-    public static void Canny(Mat image, Mat edges, double threshold1, double threshold2)
+    public static void Canny(Mat image, Mat edges, double threshold1, double threshold2, int i)
     {
 
         Canny_1(image.nativeObj, edges.nativeObj, threshold1, threshold2);

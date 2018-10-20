@@ -4,7 +4,7 @@
 
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.CAMERA"/>
+    <uses-permission android:name="android.permission.CAMERA" />
 
     <application
         android:allowBackup="true"
@@ -21,7 +21,8 @@
             </intent-filter>
         </activity>
         <activity android:name=".LoadImageActivity" />
-        <activity android:name=".TakePictActivity"></activity>
+        <activity android:name=".TakePictActivity" />
+        <activity android:name=".HoughActivity"></activity>
     </application>
 
 </manifest>

@@ -21,6 +21,15 @@
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="185dp"
-        android:text="Load Image" />
+        android:text="Geometri" />
+
+    <Button
+        android:id="@+id/btn_hough"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:layout_alignStart="@+id/btn_load"
+        android:layout_below="@+id/btn_take"
+        android:layout_marginTop="60dp"
+        android:text="Hough"/>
 
 </RelativeLayout>

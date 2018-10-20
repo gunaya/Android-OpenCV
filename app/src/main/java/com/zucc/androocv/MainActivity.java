@@ -7,7 +7,7 @@ import android.view.View;
 import android.widget.Button;
 
 public class MainActivity extends AppCompatActivity {
-    Button loadBtn, takeBtn;
+    Button loadBtn, takeBtn, houghBtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,6 +29,15 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Intent intTake = new Intent(MainActivity.this, TakePictActivity.class);
                 startActivity(intTake);
+            }
+        });
+
+        houghBtn = findViewById(R.id.btn_hough);
+        houghBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intHough = new Intent(MainActivity.this, HoughActivity.class);
+                startActivity(intHough);
             }
         });
     }
