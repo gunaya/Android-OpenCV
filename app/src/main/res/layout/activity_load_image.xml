@@ -10,14 +10,13 @@
 
     <ImageView
         android:id="@+id/image_preview"
-        android:layout_width="250dp"
+        android:layout_width="350dp"
         android:layout_height="300dp"
-        android:background="@mipmap/ic_launcher"
         />
 
     <LinearLayout
         android:layout_width="350dp"
-        android:layout_height="wrap_content"
+        android:layout_height="50dp"
         android:orientation="horizontal"
         android:gravity="center_horizontal"
         android:layout_marginTop="25dp"
@@ -26,13 +25,18 @@
         <Button
             android:id="@+id/btn_gallery"
             android:layout_width="150dp"
-            android:layout_height="70dp"
+            android:layout_height="match_parent"
             android:text="Open Image"/>
+        <Button
+            android:id="@+id/btn_reset"
+            android:layout_width="150dp"
+            android:layout_height="match_parent"
+            android:text="Reset Image"/>
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="350dp"
-        android:layout_height="wrap_content"
+        android:layout_height="50dp"
         android:orientation="horizontal"
         android:gravity="center_horizontal"
         android:padding="0dp">
@@ -40,27 +44,32 @@
         <Button
             android:id="@+id/btn_verti"
             android:layout_width="150dp"
-            android:layout_height="70dp"
+            android:layout_height="match_parent"
             android:text="Flip Vertical"
             />
 
         <Button
             android:id="@+id/btn_hori"
             android:layout_width="150dp"
-            android:layout_height="70dp"
+            android:layout_height="match_parent"
             android:text="Flip Horizontal" />
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="350dp"
-        android:layout_height="wrap_content"
+        android:layout_height="50dp"
         android:orientation="horizontal"
         android:gravity="center_horizontal"
         android:padding="0dp">
         <Button
+            android:id="@+id/btn_bright"
+            android:layout_width="150dp"
+            android:layout_height="match_parent"
+            android:text="Brightness +20"/>
+        <Button
             android:id="@+id/btn_save"
             android:layout_width="150dp"
-            android:layout_height="70dp"
+            android:layout_height="match_parent"
             android:text="Save Image"/>
     </LinearLayout>
 

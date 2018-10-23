@@ -33,11 +33,11 @@ import java.util.Date;
 
 public class LoadImageActivity extends AppCompatActivity {
     private static String TAG = "Load Image";
-    Button galleryBtn, saveBtn, flipVerti, flipHori;
+    Button galleryBtn, saveBtn, flipVerti, flipHori, brightBtn, resetBtn;
     ImageView previewImg;
     Uri imageUri;
     Mat resultImage;
-    Bitmap bitmap, resultBitmap;
+    Bitmap bitmap, bitmapReset;
     int i, j, k;
     static {
         if (OpenCVLoader.initDebug()){
@@ -52,6 +52,8 @@ public class LoadImageActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_load_image);
 
+        resetBtn = findViewById(R.id.btn_reset);
+        brightBtn  =findViewById(R.id.btn_bright);
         galleryBtn = findViewById(R.id.btn_gallery);
         flipHori = findViewById(R.id.btn_hori);
         flipVerti = findViewById(R.id.btn_verti);
@@ -66,17 +68,17 @@ public class LoadImageActivity extends AppCompatActivity {
             }
         });
 
+        resetBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                bitmap = bitmapReset.copy(Bitmap.Config.ARGB_8888, true);
+                previewImg.setImageBitmap(bitmap);
+            }
+        });
+
         flipVerti.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                InputStream inputStream = null;
-                try {
-                    inputStream = getContentResolver().openInputStream(imageUri);
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                }
-
-                bitmap = BitmapFactory.decodeStream(inputStream);
                 flipVertical(bitmap);
             }
         });
@@ -84,14 +86,14 @@ public class LoadImageActivity extends AppCompatActivity {
         flipHori.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                InputStream inputStream = null;
-                try {
-                    inputStream = getContentResolver().openInputStream(imageUri);
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                }
-                bitmap = BitmapFactory.decodeStream(inputStream);
                 flipHorizontal(bitmap);
+            }
+        });
+
+        brightBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                setBrightness(bitmap);
             }
         });
 
@@ -109,7 +111,7 @@ public class LoadImageActivity extends AppCompatActivity {
                 }
                 try {
                     FileOutputStream out = new FileOutputStream(file);
-                    resultBitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
+                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
                     Log.i("Saving Image","Success");
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -127,6 +129,7 @@ public class LoadImageActivity extends AppCompatActivity {
             try {
                 InputStream inputStream = getContentResolver().openInputStream(imageUri);
                 bitmap = BitmapFactory.decodeStream(inputStream);
+                bitmapReset = bitmap.copy(Bitmap.Config.ARGB_8888, true);
                 previewImg.setImageBitmap(bitmap);
 
                 bitmap = bitmap.copy(Bitmap.Config.ARGB_8888, true);
@@ -152,13 +155,11 @@ public class LoadImageActivity extends AppCompatActivity {
     }
 
     public void flipVertical (Bitmap bitmap) {
-        bitmap = bitmap.copy(Bitmap.Config.ARGB_8888, true);
         Mat sampledImage = new Mat(bitmap.getWidth(), bitmap.getHeight(), CvType.CV_8UC4);
         Utils.bitmapToMat(bitmap, sampledImage);
 
         Size sizeMat = sampledImage.size();
         resultImage = new Mat(bitmap.getWidth(), bitmap.getHeight(), CvType.CV_8UC4);
-        resultBitmap = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), Bitmap.Config.ARGB_8888);
 
 //                Log.i(TAG, ""+dataMat[0]);
         double[] dataFlip = new double[0];
@@ -177,20 +178,18 @@ public class LoadImageActivity extends AppCompatActivity {
             Log.i("Matrix Image",""+matrix[i]);
             simpanMatriks(matrix[i], "vertikal");
         }
-        Utils.matToBitmap(resultImage, resultBitmap);
-        previewImg.setImageBitmap(resultBitmap);
+        Utils.matToBitmap(resultImage, bitmap);
+        previewImg.setImageBitmap(bitmap);
 
         Log.i(TAG, "Flip Image Vertical Success");
     }
 
     public void flipHorizontal (Bitmap bitmap) {
-        bitmap = bitmap.copy(Bitmap.Config.ARGB_8888, true);
         Mat sampledImage = new Mat(bitmap.getWidth(), bitmap.getHeight(), CvType.CV_8UC4);
         Utils.bitmapToMat(bitmap, sampledImage);
 
         Size sizeMat = sampledImage.size();
         resultImage = new Mat(bitmap.getWidth(), bitmap.getHeight(), CvType.CV_8UC4);
-        resultBitmap = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), Bitmap.Config.ARGB_8888);
 
 //                Log.i(TAG, ""+dataMat[0]);
         double[] dataFlip = new double[0];
@@ -208,10 +207,41 @@ public class LoadImageActivity extends AppCompatActivity {
             Log.i("Matrix Image",""+matrix[i]);
             simpanMatriks(matrix[i],"horizontal");
         }
-        Utils.matToBitmap(resultImage, resultBitmap);
-        previewImg.setImageBitmap(resultBitmap);
+        Utils.matToBitmap(resultImage, bitmap);
+        previewImg.setImageBitmap(bitmap);
 
         Log.i(TAG, "Flip Image Horizontal Success");
+    }
+
+    public void setBrightness(Bitmap bitmap) {
+        Mat sampledImage = new Mat(bitmap.getWidth(), bitmap.getHeight(), CvType.CV_8UC4);
+        Utils.bitmapToMat(bitmap, sampledImage);
+
+        Size sizeMat = sampledImage.size();
+        resultImage = new Mat(bitmap.getWidth(), bitmap.getHeight(), CvType.CV_8UC4);
+
+        String[] matrix = new String[(int) sizeMat.width];
+        for (i=0;i<sizeMat.height;i++){
+            matrix[i] = "| ";
+            for (j=0;j<sizeMat.width;j++){
+                double[] dataMat = sampledImage.get(i,j);
+                if (dataMat[0] == 255 || dataMat[1]==255 || dataMat[2]==255){
+                    dataMat[0] = 255;
+                    dataMat[1] = 255;
+                    dataMat[2] = 255;
+                } else {
+                    dataMat[0] = dataMat[0] + 20;
+                    dataMat[1] = dataMat[1] + 20;
+                    dataMat[2] = dataMat[2] + 20;
+                }
+                resultImage.put(i,j,dataMat);
+                matrix[i] = matrix[i]+""+dataMat[0]+", "+dataMat[1]+", "+dataMat[2]+" | ";
+            }
+            Log.i("Matrix Image",""+matrix[i]);
+        }
+        Log.i("END","MATRIKS");
+        Utils.matToBitmap(resultImage, bitmap);
+        previewImg.setImageBitmap(bitmap);
     }
 
     public void simpanMatriks(String matriks, String asli) {
