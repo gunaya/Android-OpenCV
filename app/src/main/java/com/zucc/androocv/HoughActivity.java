@@ -17,6 +17,7 @@ import org.opencv.android.Utils;
 import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
+import org.opencv.core.MatOfPoint;
 import org.opencv.core.Point;
 import org.opencv.core.Scalar;
 import org.opencv.core.Size;
@@ -24,9 +25,11 @@ import org.opencv.imgproc.Imgproc;
 
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 public class HoughActivity extends AppCompatActivity {
-    Button lineDet, circleDet, loadImage, resetImage;
+    Button lineDet,linePDet, circleDet, loadImage, resetImage, compLabel, ellipseDet;
     ImageView previewImg;
     Uri imageUri;
     Bitmap bitmap, bitmapReset;
@@ -50,6 +53,9 @@ public class HoughActivity extends AppCompatActivity {
         lineDet = findViewById(R.id.btn_line);
         circleDet = findViewById(R.id.btn_circle);
         previewImg = findViewById(R.id.image_preview);
+        compLabel = findViewById(R.id.btn_labelling);
+        linePDet = findViewById(R.id.btn_linep);
+        ellipseDet = findViewById(R.id.btn_ellipse);
 
         loadImage.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -70,6 +76,20 @@ public class HoughActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 CircleDetection(bitmap);
+            }
+        });
+
+        compLabel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ComponentsLabelling(bitmap);
+            }
+        });
+
+        linePDet.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                LineP(bitmap);
             }
         });
 
@@ -111,18 +131,6 @@ public class HoughActivity extends AppCompatActivity {
         Imgproc.Canny(greyImg,greyImg,80, 100, 1);
 
         Mat lines = new Mat();
-//        Imgproc.HoughLinesP(greyImg, lines, 1, Math.PI/180, 150, 20, 200);
-//        for (int x = 0; x< lines.rows(); x++){
-//            double[] vec = lines.get(x,0);
-//            double x1 = vec[0],
-//                    y1 = vec[1],
-//                    x2 = vec[2],
-//                    y2 = vec[3];
-//            Point start = new Point(x1, y1);
-//            Point end = new Point(x2, y2);
-//
-//            Core.line(initImg, start, end, new Scalar(255,0,0, 255),3);
-//        }
 
         Imgproc.HoughLines(greyImg, lines,1,Math.PI/180, 150);
         for(int i = 0; i<lines.cols();i++) {
@@ -142,19 +150,45 @@ public class HoughActivity extends AppCompatActivity {
         previewImg.setImageBitmap(bmp);
     }
 
-    public void CircleDetection(Bitmap bitmap) {
+    public void LineP(Bitmap bitmap) {
         initImg = new Mat(bitmap.getWidth(), bitmap.getHeight(), CvType.CV_8UC4);
         Utils.bitmapToMat(bitmap, initImg);
 
-        //ubah ke greyscale
         greyImg = new Mat();
         Imgproc.cvtColor(initImg, greyImg, Imgproc.COLOR_BGR2GRAY);
         Bitmap bmp = Bitmap.createBitmap(greyImg.cols(), greyImg.rows(), Bitmap.Config.ARGB_8888);
 
-//        Imgproc.blur(greyImg, greyImg, new Size(10,10));
+        Imgproc.GaussianBlur(greyImg, greyImg,new Size(5,5),0);
+        Imgproc.Canny(greyImg,greyImg,80, 100, 1);
+
+        Mat lines = new Mat();
+        Imgproc.HoughLinesP(greyImg, lines, 1, Math.PI/180, 150, 20, 200);
+        for (int x = 0; x< lines.rows(); x++){
+            double[] vec = lines.get(x,0);
+            double x1 = vec[0],
+                    y1 = vec[1],
+                    x2 = vec[2],
+                    y2 = vec[3];
+            Point start = new Point(x1, y1);
+            Point end = new Point(x2, y2);
+
+            Core.line(initImg, start, end, new Scalar(255,0,0, 255),3);
+        }
+        Utils.matToBitmap(initImg, bmp);
+        previewImg.setImageBitmap(bmp);
+    }
+
+    public void CircleDetection(Bitmap bitmap) {
+        initImg = new Mat(bitmap.getWidth(), bitmap.getHeight(), CvType.CV_8UC4);
+        Utils.bitmapToMat(bitmap, initImg);
+
+        greyImg = new Mat();
+        Imgproc.cvtColor(initImg, greyImg, Imgproc.COLOR_BGR2GRAY);
+        Bitmap bmp = Bitmap.createBitmap(greyImg.cols(), greyImg.rows(), Bitmap.Config.ARGB_8888);
+
         Imgproc.GaussianBlur(greyImg, greyImg,new Size(9,9),0);
         Imgproc.Canny(greyImg,greyImg,100, 100, 3);
-//        Imgproc.adaptiveThreshold(greyImg, greyImg,255,Imgproc.ADAPTIVE_THRESH_MEAN_C, Imgproc.THRESH_BINARY,15,40);
+
         Mat circles = new Mat();
 
         Imgproc.HoughCircles(greyImg, circles, Imgproc.CV_HOUGH_GRADIENT, 2, 145, 100, 100, 0,200);
@@ -165,6 +199,55 @@ public class HoughActivity extends AppCompatActivity {
 
             Core.circle(initImg, pt, radius+1, new Scalar(255, 0,0, 255), 3);
         }
+        Utils.matToBitmap(initImg, bmp);
+        previewImg.setImageBitmap(bmp);
+    }
+
+    public void EllipseDetection(Bitmap bitmap) {
+        initImg = new Mat(bitmap.getWidth(), bitmap.getHeight(), CvType.CV_8UC4);
+        Utils.bitmapToMat(bitmap, initImg);
+
+        greyImg = new Mat();
+        Imgproc.cvtColor(initImg, greyImg, Imgproc.COLOR_BGR2GRAY);
+        Bitmap bmp = Bitmap.createBitmap(greyImg.cols(), greyImg.rows(), Bitmap.Config.ARGB_8888);
+
+        Imgproc.GaussianBlur(greyImg, greyImg,new Size(9,9),0);
+        Imgproc.Canny(greyImg,greyImg,100, 100, 3);
+
+        Mat circles = new Mat();
+
+        Imgproc.HoughCircles(greyImg, circles, Imgproc.CV_HOUGH_GRADIENT, 2, 145, 100, 100, 0,200);
+        for (int i=0;i<circles.cols();i++){
+            double[] vCircle = circles.get(0,i);
+            Point pt = new Point(Math.round(vCircle[0]), Math.round(vCircle[1]));
+            int radius = (int)Math.round(vCircle[2]);
+
+            Core.circle(initImg, pt, radius+1, new Scalar(255, 0,0, 255), 3);
+
+        }
+        Utils.matToBitmap(initImg, bmp);
+        previewImg.setImageBitmap(bmp);
+    }
+
+    public void ComponentsLabelling(Bitmap bitmap){
+        initImg = new Mat(bitmap.getWidth(), bitmap.getHeight(), CvType.CV_8UC4);
+        Utils.bitmapToMat(bitmap, initImg);
+
+        greyImg = new Mat();
+        Imgproc.cvtColor(initImg, greyImg, Imgproc.COLOR_BGR2GRAY);
+
+        Bitmap bmp = Bitmap.createBitmap(greyImg.cols(), greyImg.rows(), Bitmap.Config.ARGB_8888);
+        Imgproc.Canny(greyImg,greyImg,100, 100, 3);
+
+        List<MatOfPoint> contours = new ArrayList<>();
+        Mat hierarchy = new Mat();
+
+        Imgproc.findContours(greyImg, contours, hierarchy, Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE);
+
+        for(int idx=0; idx< contours.size(); idx++) {
+            Imgproc.drawContours(initImg, contours, idx, new Scalar(255,0,0,255), -1);
+        }
+
         Utils.matToBitmap(initImg, bmp);
         previewImg.setImageBitmap(bmp);
     }

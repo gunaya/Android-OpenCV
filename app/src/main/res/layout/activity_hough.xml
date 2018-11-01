@@ -18,7 +18,6 @@
         android:layout_height="50dp"
         android:orientation="horizontal"
         android:gravity="center_horizontal"
-        android:layout_marginTop="25dp"
         android:padding="0dp">
         <Button
             android:id="@+id/btn_get"
@@ -46,11 +45,42 @@
             android:text="Line Detection"
             />
         <Button
+            android:id="@+id/btn_linep"
+            android:layout_width="150dp"
+            android:layout_height="match_parent"
+            android:text="Probabilistic " />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="350dp"
+        android:layout_height="50dp"
+        android:orientation="horizontal"
+        android:gravity="center_horizontal"
+        android:padding="0dp">
+        <Button
             android:id="@+id/btn_circle"
             android:layout_width="150dp"
             android:layout_height="match_parent"
-            android:text="Circle Detection" />
+            android:text="Circle Detection"
+            />
+        <Button
+            android:id="@+id/btn_ellipse"
+            android:layout_width="150dp"
+            android:layout_height="match_parent"
+            android:text="Ellipse Detection" />
     </LinearLayout>
 
+    <LinearLayout
+        android:layout_width="350dp"
+        android:layout_height="50dp"
+        android:orientation="horizontal"
+        android:gravity="center_horizontal"
+        android:padding="0dp">
+        <Button
+            android:id="@+id/btn_labelling"
+            android:layout_width="150dp"
+            android:layout_height="match_parent"
+            android:text="Component Labelling"/>
+    </LinearLayout>
 
 </LinearLayout>
