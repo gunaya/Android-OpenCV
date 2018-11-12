@@ -162,7 +162,7 @@ public class HoughActivity extends AppCompatActivity {
         Imgproc.Canny(greyImg,greyImg,80, 100, 1);
 
         Mat lines = new Mat();
-        Imgproc.HoughLinesP(greyImg, lines, 1, Math.PI/180, 150, 20, 200);
+        Imgproc.HoughLinesP(greyImg, lines, 1, Math.PI/180, 150, 1, 200);
         for (int x = 0; x< lines.rows(); x++){
             double[] vec = lines.get(x,0);
             double x1 = vec[0],
