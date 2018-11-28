@@ -10,10 +10,18 @@
         android:id="@+id/btn_take"
         android:layout_width="150dp"
         android:layout_height="wrap_content"
+        android:layout_above="@+id/btn_test"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="10dp"
+        android:text="Circle Object Tracking" />
+    <Button
+        android:id="@+id/btn_test"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
         android:layout_above="@+id/btn_load"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="10dp"
-        android:text="Take Picture" />
+        android:text="Test Object Tracking" />
     <Button
         android:id="@+id/btn_load"
         android:layout_width="150dp"
@@ -28,8 +36,8 @@
         android:layout_width="150dp"
         android:layout_height="wrap_content"
         android:layout_alignStart="@+id/btn_load"
-        android:layout_below="@+id/btn_take"
-        android:layout_marginTop="60dp"
-        android:text="Hough"/>
+        android:layout_below="@+id/btn_test"
+        android:layout_marginTop="58dp"
+        android:text="Hough" />
 
 </RelativeLayout>

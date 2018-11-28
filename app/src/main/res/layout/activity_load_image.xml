@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:gravity="center"
     android:orientation="vertical"
-    tools:context="com.zucc.androocv.LoadImageActivity">
+    tools:context="com.zucc.androocv.UTS.LoadImageActivity">
 
     <ImageView
         android:id="@+id/image_preview"

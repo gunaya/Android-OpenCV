@@ -1,4 +1,4 @@
-package com.zucc.androocv;
+package com.zucc.androocv.UAS;
 
 import android.content.Context;
 import android.media.MediaActionSound;
@@ -8,25 +8,35 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.SurfaceView;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.zucc.androocv.R;
+
 import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.CameraBridgeViewBase;
+import org.opencv.android.JavaCameraView;
 import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
 import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
+import org.opencv.core.MatOfPoint;
+import org.opencv.core.Point;
+import org.opencv.core.Scalar;
+import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 
-import java.io.FileOutputStream;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class TakePictActivity extends AppCompatActivity implements CameraBridgeViewBase.CvCameraViewListener2 {
-    private static final String TAG = "Take Pict";
-    myJavaCam cameraBridgeViewBase;
-    Mat mat;
+    private static final String TAG = "Circular Tracking";
+    CameraBridgeViewBase cameraBridgeViewBase;
+    Mat input, circles, gray, canny;
+    Mat imRGB, imHSV, imThreshold1, imThreshold2, imThresholded, array255, distance;
     Button okBtn;
 
     private BaseLoaderCallback mLoaderCallback = new BaseLoaderCallback(this) {
@@ -50,23 +60,10 @@ public class TakePictActivity extends AppCompatActivity implements CameraBridgeV
         setContentView(R.layout.activity_take_pict);
         cameraBridgeViewBase = findViewById(R.id.javacam);
         cameraBridgeViewBase.setVisibility(SurfaceView.VISIBLE);
+//        cameraBridgeViewBase.setMaxFrameSize(1080,2160);
         cameraBridgeViewBase.setCvCameraViewListener(this);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
-        okBtn = findViewById(R.id.btn_ok);
-        okBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                MediaActionSound sound = new MediaActionSound();
-                sound.play(MediaActionSound.SHUTTER_CLICK);
-
-                Date date = new Date();
-                String currentDateTime = date.toString();
-                String fileName = Environment.getExternalStorageDirectory().getPath() + "/Sample_" + currentDateTime + ".jpeg";
-                cameraBridgeViewBase.takePicture(fileName);
-
-
-            }
-        });
     }
 
     @Override
@@ -92,20 +89,52 @@ public class TakePictActivity extends AppCompatActivity implements CameraBridgeV
 
     @Override
     public void onCameraViewStarted(int width, int height) {
-        mat = new Mat(width, height, CvType.CV_8UC4);
+        imRGB = new Mat(height, width, CvType.CV_8UC4);
+        imHSV = new Mat(height, width, CvType.CV_8UC4);
+        array255 = new Mat(height, width, CvType.CV_8UC1);
+        imThreshold1 = new Mat(height, width, CvType.CV_8UC1);
+        imThreshold2 = new Mat(height, width, CvType.CV_8UC1);
+
     }
 
     @Override
     public void onCameraViewStopped() {
-        mat.release();
+        imRGB.release();
     }
 
     @Override
     public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
-        mat = inputFrame.rgba();
-        Mat mRgbaT=mat.t();
-        Core.flip(mat.t(),mRgbaT,1);
-        Imgproc.resize(mRgbaT,mRgbaT,mat.size());
-        return mRgbaT;
+        input = inputFrame.gray();
+
+        circles = new Mat();
+        canny = new Mat();
+
+        Imgproc.blur(input, input, new Size(7,7), new Point(2,2));
+        Imgproc.Canny(input, canny,50,150);
+        Log.i("src","blur");
+
+        Imgproc.HoughCircles(canny, circles, Imgproc.CV_HOUGH_GRADIENT, 2, 145, 100, 100, 0,200);
+        Log.i("src", String.valueOf("size: "+circles.cols())+". "+String.valueOf(circles.rows()));
+
+        if (circles.cols() > 0 ) {
+            for (int x = 0; x < Math.min(circles.cols(), 5); x++ ){
+                double circleVec[] = circles.get(0,x);
+
+                if (circleVec == null){
+                    break;
+                }
+
+                Point center = new Point(circleVec[0], circleVec[1]);
+                int radius = (int) circleVec[2];
+
+                Core.circle(input, center, 3, new Scalar(255,0,0,255),5);
+                Core.circle(input, center, radius, new Scalar(255,0,0,255), 2);
+            }
+        }
+        circles.release();
+        return inputFrame.rgba();
+
     }
+
+
 }

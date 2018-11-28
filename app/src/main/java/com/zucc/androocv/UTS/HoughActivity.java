@@ -1,4 +1,4 @@
-package com.zucc.androocv;
+package com.zucc.androocv.UTS;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -11,6 +11,8 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+
+import com.zucc.androocv.R;
 
 import org.opencv.android.OpenCVLoader;
 import org.opencv.android.Utils;
@@ -34,7 +36,7 @@ public class HoughActivity extends AppCompatActivity {
     Uri imageUri;
     Bitmap bitmap, bitmapReset;
     Mat initImg, greyImg;
-    int threshold  =200, minLineSize = 20, lineGap = 20;
+    int threshold  =80, minLineSize = 30, lineGap = 10;
     static {
         if (OpenCVLoader.initDebug()){
             Log.i("OpenCV", "OpenCV Loaded Successfully");
@@ -93,6 +95,13 @@ public class HoughActivity extends AppCompatActivity {
             }
         });
 
+        ellipseDet.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                EllipseDetection(bitmap);
+            }
+        });
+
         resetImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -128,7 +137,7 @@ public class HoughActivity extends AppCompatActivity {
         Bitmap bmp = Bitmap.createBitmap(greyImg.cols(), greyImg.rows(), Bitmap.Config.ARGB_8888);
 
         Imgproc.GaussianBlur(greyImg, greyImg,new Size(5,5),0);
-        Imgproc.Canny(greyImg,greyImg,80, 100, 1);
+        Imgproc.Canny(greyImg,greyImg,80, 100);
 
         Mat lines = new Mat();
 
@@ -159,10 +168,10 @@ public class HoughActivity extends AppCompatActivity {
         Bitmap bmp = Bitmap.createBitmap(greyImg.cols(), greyImg.rows(), Bitmap.Config.ARGB_8888);
 
         Imgproc.GaussianBlur(greyImg, greyImg,new Size(5,5),0);
-        Imgproc.Canny(greyImg,greyImg,80, 100, 1);
+        Imgproc.Canny(greyImg,greyImg,50, 200);
 
         Mat lines = new Mat();
-        Imgproc.HoughLinesP(greyImg, lines, 1, Math.PI/180, 150, 1, 200);
+        Imgproc.HoughLinesP(greyImg, lines, 1, Math.PI/180, threshold, minLineSize, lineGap);
         for (int x = 0; x< lines.rows(); x++){
             double[] vec = lines.get(x,0);
             double x1 = vec[0],
@@ -187,7 +196,7 @@ public class HoughActivity extends AppCompatActivity {
         Bitmap bmp = Bitmap.createBitmap(greyImg.cols(), greyImg.rows(), Bitmap.Config.ARGB_8888);
 
         Imgproc.GaussianBlur(greyImg, greyImg,new Size(9,9),0);
-        Imgproc.Canny(greyImg,greyImg,100, 100, 3);
+        Imgproc.Canny(greyImg,greyImg,100, 100);
 
         Mat circles = new Mat();
 
@@ -212,18 +221,22 @@ public class HoughActivity extends AppCompatActivity {
         Bitmap bmp = Bitmap.createBitmap(greyImg.cols(), greyImg.rows(), Bitmap.Config.ARGB_8888);
 
         Imgproc.GaussianBlur(greyImg, greyImg,new Size(9,9),0);
-        Imgproc.Canny(greyImg,greyImg,100, 100, 3);
+        Imgproc.Canny(greyImg,greyImg,100, 100);
 
         Mat circles = new Mat();
 
-        Imgproc.HoughCircles(greyImg, circles, Imgproc.CV_HOUGH_GRADIENT, 2, 145, 100, 100, 0,200);
-        for (int i=0;i<circles.cols();i++){
-            double[] vCircle = circles.get(0,i);
-            Point pt = new Point(Math.round(vCircle[0]), Math.round(vCircle[1]));
-            int radius = (int)Math.round(vCircle[2]);
+        Imgproc.HoughCircles(greyImg, circles, Imgproc.CV_HOUGH_GRADIENT, 2, greyImg.height()/4, 500, 50, 0, 0);
 
-            Core.circle(initImg, pt, radius+1, new Scalar(255, 0,0, 255), 3);
-
+        int rows = circles.rows();
+        int elemSize = (int)circles.elemSize();
+        float[] data2 = new float[rows * elemSize/4];
+        if (data2.length>0){
+            circles.get(0, 0, data2);
+            // into data2
+            for(int i=0; i<data2.length; i=i+3) {
+                Point center= new Point(data2[i], data2[i+1]);
+                Core.ellipse( initImg, center, new Size((double)data2[i+2], (double)data2[i+2]), 0, 0, 360, new Scalar( 255, 0, 0, 255 ), 4, 8, 0 );
+            }
         }
         Utils.matToBitmap(initImg, bmp);
         previewImg.setImageBitmap(bmp);
@@ -237,7 +250,7 @@ public class HoughActivity extends AppCompatActivity {
         Imgproc.cvtColor(initImg, greyImg, Imgproc.COLOR_BGR2GRAY);
 
         Bitmap bmp = Bitmap.createBitmap(greyImg.cols(), greyImg.rows(), Bitmap.Config.ARGB_8888);
-        Imgproc.Canny(greyImg,greyImg,100, 100, 3);
+        Imgproc.Canny(greyImg,greyImg,100, 100);
 
         List<MatOfPoint> contours = new ArrayList<>();
         Mat hierarchy = new Mat();

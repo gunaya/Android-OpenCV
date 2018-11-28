@@ -6,8 +6,13 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
+import com.zucc.androocv.UAS.TakePictActivity;
+import com.zucc.androocv.UAS.TrackActivity;
+import com.zucc.androocv.UTS.HoughActivity;
+import com.zucc.androocv.UTS.LoadImageActivity;
+
 public class MainActivity extends AppCompatActivity {
-    Button loadBtn, takeBtn, houghBtn;
+    Button loadBtn, takeBtn, houghBtn, testBtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,6 +43,15 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Intent intHough = new Intent(MainActivity.this, HoughActivity.class);
                 startActivity(intHough);
+            }
+        });
+
+        testBtn = findViewById(R.id.btn_test);
+        testBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intTest = new Intent(MainActivity.this, TrackActivity.class);
+                startActivity(intTest);
             }
         });
     }

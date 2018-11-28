@@ -1,4 +1,4 @@
-package com.zucc.androocv;
+package com.zucc.androocv.UTS;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -12,6 +12,8 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+
+import com.zucc.androocv.R;
 
 import org.opencv.android.OpenCVLoader;
 import org.opencv.android.Utils;
