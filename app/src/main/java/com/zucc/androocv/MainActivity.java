@@ -6,8 +6,8 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
-import com.zucc.androocv.UAS.TakePictActivity;
-import com.zucc.androocv.UAS.TrackActivity;
+//import com.zucc.androocv.UAS.TakePictActivity;
+//import com.zucc.androocv.UAS.TrackActivity;
 import com.zucc.androocv.UTS.HoughActivity;
 import com.zucc.androocv.UTS.LoadImageActivity;
 
@@ -28,15 +28,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        takeBtn = findViewById(R.id.btn_take);
-        takeBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intTake = new Intent(MainActivity.this, TakePictActivity.class);
-                startActivity(intTake);
-            }
-        });
-
         houghBtn = findViewById(R.id.btn_hough);
         houghBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -46,13 +37,22 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        testBtn = findViewById(R.id.btn_test);
-        testBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intTest = new Intent(MainActivity.this, TrackActivity.class);
-                startActivity(intTest);
-            }
-        });
+//        testBtn = findViewById(R.id.btn_test);
+//        testBtn.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                Intent intTest = new Intent(MainActivity.this, TrackActivity.class);
+//                startActivity(intTest);
+//            }
+//        });
+//
+//        takeBtn = findViewById(R.id.btn_take);
+//        takeBtn.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                Intent intTake = new Intent(MainActivity.this, TakePictActivity.class);
+//                startActivity(intTake);
+//            }
+//        });
     }
 }
